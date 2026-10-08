@@ -11,14 +11,23 @@ $AppPassword = "password"
 
 function Get-CpuStat {
     $l = (Get-Content /proc/stat -TotalCount 1) -split '\s+'
-    #Get-Counter for Windows
+
     $v = $l[1..8] | ForEach-Object { [double]$_ }
     [pscustomobject]@{
         Idle  = $v[3] + $v[4]                          # idle + iowait
         Total = ($v | Measure-Object -Sum).Sum
     }
 }
-
+#Get-CimInstance Win32_Processor for Windows
+<#
+function Get-CpuUsage {
+    $mesures = 1..3 | ForEach-Object {
+        (Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
+        Start-Sleep -Seconds 1
+    }
+    [math]::Round(($mesures | Measure-Object -Average).Average, 1)
+}
+#>
 function Send-Alert($cpu) {
     try {
         $smtp = [System.Net.Mail.SmtpClient]::new("smtp.gmail.com", 587)
