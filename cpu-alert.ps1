@@ -18,16 +18,7 @@ function Get-CpuStat {
         Total = ($v | Measure-Object -Sum).Sum
     }
 }
-#Get-CimInstance Win32_Processor for Windows
-<#
-function Get-CpuUsage {
-    $mesures = 1..3 | ForEach-Object {
-        (Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
-        Start-Sleep -Seconds 1
-    }
-    [math]::Round(($mesures | Measure-Object -Average).Average, 1)
-}
-#>
+
 function Send-Alert($cpu) {
     try {
         $smtp = [System.Net.Mail.SmtpClient]::new("smtp.gmail.com", 587)
